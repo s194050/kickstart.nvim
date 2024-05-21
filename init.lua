@@ -8,7 +8,47 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
-
+vim.lsp.inlay_hint.enable(true)
+vim.g.rustaceanvim = {
+  server = {
+    settings = {
+      ['rust-analyzer'] = {
+        inlayHints = {
+          bindingModeHints = {
+            enable = false,
+          },
+          chainingHints = {
+            enable = true,
+          },
+          closingBraceHints = {
+            enable = true,
+            minLines = 25,
+          },
+          closureReturnTypeHints = {
+            enable = 'never',
+          },
+          lifetimeElisionHints = {
+            enable = 'never',
+            useParameterNames = false,
+          },
+          maxLength = 25,
+          parameterHints = {
+            enable = true,
+          },
+          reborrowHints = {
+            enable = 'never',
+          },
+          renderColons = true,
+          typeHints = {
+            enable = true,
+            hideClosureInitialization = false,
+            hideNamedConstructor = false,
+          },
+        },
+      },
+    },
+  },
+}
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -25,13 +65,18 @@ vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
-
+vim.opt.termguicolors = true
+vim.opt.background = 'dark'
+vim.opt.signcolumn = 'yes'
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
 --  See `:help 'clipboard'`
 vim.opt.clipboard = 'unnamedplus'
 
 -- Enable break indent
+vim.opt.tabstop = 2
+vim.opt.shiftwidth = 2
+vim.opt.expandtab = true
 vim.opt.breakindent = true
 vim.opt.autoindent = true
 -- Save undo history
@@ -85,6 +130,7 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
+-- vim.keymap.set('n', '<leader>æ', vim.lsp.inlay_hint.enable(0, not lsp.inlay_hint.is_enabled()), { desc = 'Toggle inlay hint[Z]' })
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -151,7 +197,10 @@ require('lazy').setup({
   event = 'LspAttach',
   dependencies = { 'neovim/nvim-lspconfig' },
   config = function()
-    require('inlay-hints').setup()
+    require('inlay-hints').setup {
+      commands = { enable = true },
+      autocmd = { enable = true },
+    }
   end,
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
@@ -509,7 +558,7 @@ require('lazy').setup({
         'lua-language-server',
         'stylua',
         'eslint_d',
-        'prettierd',
+        'prettier',
         'graphql-language-service-cli',
         'prisma-language-server',
 
@@ -559,8 +608,8 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        json = { 'prettierd' },
-        yaml = { 'prettierd' },
+        json = { 'prettier' },
+        yaml = { 'prettier' },
 
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
@@ -570,6 +619,10 @@ require('lazy').setup({
         -- javascript = { { "prettierd", "prettier" } },
       },
     },
+  },
+  {
+    'stevearc/dressing.nvim',
+    event = 'VeryLazy',
   },
 
   { -- Autocompletion
@@ -684,9 +737,40 @@ require('lazy').setup({
     -- If you want to see what colorschemes are already installed, you can use `:Telescope colorscheme`.
     'folke/tokyonight.nvim',
     priority = 1000, -- Make sure to load this before all the other start plugins.
-    opts = {
-      transparent = true,
-    },
+    config = function()
+      local bg = '#011628'
+      local bg_dark = '#011423'
+      local bg_highlight = '#143652'
+      local bg_search = '#0A64AC'
+      local bg_visual = '#275378'
+      local fg = '#CBE0F0'
+      local fg_dark = '#B4D0E9'
+      local fg_gutter = '#627E97'
+      local border = '#547998'
+
+      -- Configure the tokyonight colorscheme
+      require('tokyonight').setup {
+        style = 'night',
+        transparent = true,
+        on_colors = function(colors)
+          colors.bg = bg
+          colors.bg_dark = bg_dark
+          colors.bg_float = bg_dark
+          colors.bg_highlight = bg_highlight
+          colors.bg_popup = bg_dark
+          colors.bg_search = bg_search
+          colors.bg_sidebar = bg_dark
+          colors.bg_statusline = bg_dark
+          colors.bg_visual = bg_visual
+          colors.border = border
+          colors.fg = fg
+          colors.fg_dark = fg_dark
+          colors.fg_float = fg
+          colors.fg_gutter = fg_gutter
+          colors.fg_sidebar = fg_dark
+        end,
+      }
+    end,
     init = function()
       -- Load the colorscheme here.
       -- Like many other themes, this one has different styles, and you could load
@@ -694,7 +778,7 @@ require('lazy').setup({
       vim.cmd.colorscheme 'tokyonight-night'
 
       -- You can configure highlights by doing something like:
-      vim.cmd.hi 'Comment gui=none'
+      -- vim.cmd.hi 'Comment gui=none'
     end,
   },
 
@@ -717,7 +801,7 @@ require('lazy').setup({
       -- - saiw) - [S]urround [A]dd [I]nner [W]ord [)]Paren
       -- - sd'   - [S]urround [D]elete [']quotes
       -- - sr)'  - [S]urround [R]eplace [)] [']
-      require('mini.surround').setup()
+      -- require('mini.surround').setup()
 
       -- Simple and easy statusline.
       --  You could remove this setup call if you don't like it,

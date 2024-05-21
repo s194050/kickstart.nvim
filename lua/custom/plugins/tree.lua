@@ -31,6 +31,20 @@ return {
       require('nvim-tree').setup {
         view = {
           width = 35,
+          relativenumber = true,
+        },
+        renderer = {
+          indent_markers = {
+            enable = true,
+          },
+          icons = {
+            glyphs = {
+              folder = {
+                arrow_closed = '', -- arrow when folder is closed
+                arrow_open = '', -- arrow when folder is open
+              },
+            },
+          },
         },
         on_attach = my_on_attach,
         filters = {
