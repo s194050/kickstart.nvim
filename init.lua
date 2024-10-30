@@ -8,47 +8,7 @@ vim.g.maplocalleader = ' '
 
 -- Set to true if you have a Nerd Font installed
 vim.g.have_nerd_font = true
-vim.lsp.inlay_hint.enable(true)
-vim.g.rustaceanvim = {
-  server = {
-    settings = {
-      ['rust-analyzer'] = {
-        inlayHints = {
-          bindingModeHints = {
-            enable = false,
-          },
-          chainingHints = {
-            enable = true,
-          },
-          closingBraceHints = {
-            enable = true,
-            minLines = 25,
-          },
-          closureReturnTypeHints = {
-            enable = 'never',
-          },
-          lifetimeElisionHints = {
-            enable = 'never',
-            useParameterNames = false,
-          },
-          maxLength = 25,
-          parameterHints = {
-            enable = true,
-          },
-          reborrowHints = {
-            enable = 'never',
-          },
-          renderColons = true,
-          typeHints = {
-            enable = true,
-            hideClosureInitialization = false,
-            hideNamedConstructor = false,
-          },
-        },
-      },
-    },
-  },
-}
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -82,8 +42,6 @@ vim.opt.autoindent = true
 -- Save undo history
 vim.opt.undofile = true
 
--- vim.lsp.inlay_hint(1, true)
-
 -- Case-insensitive searching UNLESS \C or one or more capital letters in the search term
 vim.opt.ignorecase = true
 vim.opt.smartcase = true
@@ -106,8 +64,8 @@ vim.bo.autoread = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
-vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
+-- vim.opt.list = true
+-- vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
@@ -130,7 +88,9 @@ vim.keymap.set('n', '[d', vim.diagnostic.goto_prev, { desc = 'Go to previous [D]
 vim.keymap.set('n', ']d', vim.diagnostic.goto_next, { desc = 'Go to next [D]iagnostic message' })
 vim.keymap.set('n', '<leader>e', vim.diagnostic.open_float, { desc = 'Show diagnostic [E]rror messages' })
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
--- vim.keymap.set('n', '<leader>æ', vim.lsp.inlay_hint.enable(0, not lsp.inlay_hint.is_enabled()), { desc = 'Toggle inlay hint[Z]' })
+
+-- Python formatting
+vim.keymap.set('n', '<leader>fmp', ':silent !black %<cr>')
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -193,15 +153,6 @@ require('lazy').setup({
   -- NOTE: Plugins can be added with a link (or for a github repo: 'owner/repo' link).
   'tpope/vim-sleuth', -- Detect tabstop and shiftwidth automatically
 
-  'MysticalDevil/inlay-hints.nvim',
-  event = 'LspAttach',
-  dependencies = { 'neovim/nvim-lspconfig' },
-  config = function()
-    require('inlay-hints').setup {
-      commands = { enable = true },
-      autocmd = { enable = true },
-    }
-  end,
   -- NOTE: Plugins can also be added by using a table,
   -- with the first argument being the link and the following
   -- keys can be used to configure plugin behavior/loading/etc.
@@ -212,11 +163,7 @@ require('lazy').setup({
   --    require('Comment').setup({})
   -- "gc" to comment visual regions/lines
   -- { 'numToStr/Comment.nvim', opts = {} },
-  {
-    'mrcjkb/rustaceanvim',
-    version = '^4', -- Recommended
-    ft = { 'rust' },
-  },
+
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
   --    require('gitsigns').setup({ ... })
@@ -257,12 +204,17 @@ require('lazy').setup({
       require('which-key').setup()
 
       -- Document existing key chains
-      require('which-key').register {
-        ['<leader>c'] = { name = '[C]ode', _ = 'which_key_ignore' },
-        ['<leader>d'] = { name = '[D]ocument', _ = 'which_key_ignore' },
-        ['<leader>r'] = { name = '[R]ename', _ = 'which_key_ignore' },
-        ['<leader>s'] = { name = '[S]earch', _ = 'which_key_ignore' },
-        ['<leader>w'] = { name = '[W]orkspace', _ = 'which_key_ignore' },
+      require('which-key').add {
+        { '<leader>c', group = '[C]ode' },
+        { '<leader>c_', hidden = true },
+        { '<leader>d', group = '[D]ocument' },
+        { '<leader>d_', hidden = true },
+        { '<leader>r', group = '[R]ename' },
+        { '<leader>r_', hidden = true },
+        { '<leader>s', group = '[S]earch' },
+        { '<leader>s_', hidden = true },
+        { '<leader>w', group = '[W]orkspace' },
+        { '<leader>w_', hidden = true },
       }
     end,
   },
@@ -516,7 +468,7 @@ require('lazy').setup({
       local servers = {
         -- clangd = {},
         -- gopls = {},
-        -- pyright = {},
+        ---pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
@@ -524,7 +476,7 @@ require('lazy').setup({
         --    https://github.com/pmizio/typescript-tools.nvim
         --
         -- But for many setups, the LSP (`tsserver`) will work just fine
-        -- tsserver = {},
+        ts_ls = {},
         --
 
         lua_ls = {
@@ -558,7 +510,6 @@ require('lazy').setup({
         'lua-language-server',
         'stylua',
         'eslint_d',
-        'prettier',
         'graphql-language-service-cli',
         'prisma-language-server',
 
@@ -579,6 +530,24 @@ require('lazy').setup({
         },
       }
     end,
+  },
+
+  {
+    'linux-cultist/venv-selector.nvim',
+    dependencies = {
+      'neovim/nvim-lspconfig',
+      'mfussenegger/nvim-dap',
+      'mfussenegger/nvim-dap-python', --optional
+      { 'nvim-telescope/telescope.nvim', branch = '0.1.x', dependencies = { 'nvim-lua/plenary.nvim' } },
+    },
+    lazy = false,
+    branch = 'regexp', -- This is the regexp branch, use this for the new version
+    config = function()
+      require('venv-selector').setup()
+    end,
+    keys = {
+      { ',v', '<cmd>VenvSelect<cr>' },
+    },
   },
 
   { -- Autoformat
@@ -608,11 +577,11 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        json = { 'prettier' },
-        yaml = { 'prettier' },
+
+        rust = { 'rustfmt', lsp_format = 'fallback' },
 
         -- Conform can also run multiple formatters sequentially
-        -- python = { "isort", "black" },
+        python = { 'black' },
         --
         -- You can use a sub-list to tell conform to run *until* a formatter
         -- is found.
@@ -747,6 +716,8 @@ require('lazy').setup({
       local fg_dark = '#B4D0E9'
       local fg_gutter = '#627E97'
       local border = '#547998'
+      -- local comment = '#545c7e'
+      local comment = '#737aa2'
 
       -- Configure the tokyonight colorscheme
       require('tokyonight').setup {
@@ -763,6 +734,7 @@ require('lazy').setup({
           colors.bg_statusline = bg_dark
           colors.bg_visual = bg_visual
           colors.border = border
+          colors.comment = comment
           colors.fg = fg
           colors.fg_dark = fg_dark
           colors.fg_float = fg
@@ -830,7 +802,7 @@ require('lazy').setup({
       'axelvc/template-string.nvim',
     },
     opts = {
-      ensure_installed = { 'bash', 'c', 'html', 'lua', 'rust', 'luadoc', 'markdown', 'vim', 'vimdoc' },
+      ensure_installed = { 'bash', 'c', 'html', 'lua', 'rust', 'luadoc', 'markdown', 'vim', 'vimdoc', 'go', 'python' },
       -- Autoinstall languages that are not installed
       sync_install = false,
       auto_install = true,
