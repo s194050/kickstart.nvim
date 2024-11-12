@@ -14,6 +14,12 @@ vim.keymap.set("n", "Y", "y$")
 -- Select all
 vim.keymap.set("n", "==", "gg<S-v>G")
 
+-- Disable arrow keys in NORMAL operation
+vim.keymap.set('n', '<left>', '<cmd>echo "Use h to move!!"<CR>')
+vim.keymap.set('n', '<right>', '<cmd>echo "Use l to move!!"<CR>')
+vim.keymap.set('n', '<up>', '<cmd>echo "Use k to move!!"<CR>')
+vim.keymap.set('n', '<down>', '<cmd>echo "Use j to move!!"<CR>')
+
 -- Keep window centered when going up/down
 vim.keymap.set("n", "J", "mzJ`z")
 vim.keymap.set("n", "<C-d>", "<C-d>zz")
@@ -101,9 +107,9 @@ vim.keymap.set("n", "<leader>vpp", "<cmd>e ~/.config/nvim/lua/plugins.lua<CR>", 
 vim.keymap.set("n", "<leader>cf", "<cmd>let @+ = expand(\"%\")<CR>", { desc = "Copy File Name" })
 vim.keymap.set("n", "<leader>cp", "<cmd>let @+ = expand(\"%:p\")<CR>", { desc = "Copy File Path" })
 
-vim.keymap.set("n", "<leader><leader>", function()
-  vim.cmd("so")
-end, { desc = "Source current file" })
+-- vim.keymap.set("n", "<leader><leader>", function()
+--   vim.cmd("so")
+-- end, { desc = "Source current file" })
 
 -- Dismiss Noice Message
 vim.keymap.set("n", "<leader>nd", "<cmd>NoiceDismiss<CR>", {desc = "Dismiss Noice Message"})
