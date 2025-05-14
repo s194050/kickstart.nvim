@@ -148,7 +148,7 @@ return {
               icon = " ",
               key = "c"
             },
-            { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ", key = "s" },
+            -- { action = 'lua require("persistence").load()', desc = " Restore Session", icon = " ", key = "s" },
             { action = "LazyExtras", desc = " Lazy Extras", icon = " ", key = "x" },
             { action = "Lazy", desc = " Lazy", icon = "󰒲 ", key = "l" },
             { action = "qa", desc = " Quit", icon = " ", key = "q" },
@@ -269,6 +269,7 @@ return {
           css = { { "prettierd", "prettier", stop_after_first = true } },
           scss = { { "prettierd", "prettier", stop_after_first = true } },
           sh = { "shellcheck" },
+          python = {"black"},
           go = { "gofmt" },
         },
       })
